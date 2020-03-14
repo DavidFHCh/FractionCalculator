@@ -1,7 +1,7 @@
 use strict;
 use Test::More;
 
-BEGIN { plan tests => 308}
+BEGIN { plan tests => 340}
 
 use Parser_Evaluator;
 use Fraction;
@@ -49,7 +49,7 @@ ok(`perl -I . Calculator.pl "10-1234" 2>&1` eq "-1224","Whole numbers operations
 ok(`perl -I . Calculator.pl "10*1234" 2>&1` eq "12340","Whole numbers operations, Multiplication.");
 ok(`perl -I . Calculator.pl "10/1234" 2>&1` eq "5/617","Whole numbers operations, Division.");
 
-#Whole numbers and fractions with whole part
+#Whole numbers and fractions
 ok(`perl -I . Calculator.pl "10+1234/3" 2>&1` eq "421_1/3","Whole numbers operations, addition.");
 ok(`perl -I . Calculator.pl "10-1234/3" 2>&1` eq "-401_1/3","Whole numbers operations, Substraction.");
 ok(`perl -I . Calculator.pl "10*1234/3" 2>&1` eq "4113_1/3","Whole numbers operations, Multiplication.");
@@ -59,12 +59,32 @@ ok(`perl -I . Calculator.pl "10/6-1234" 2>&1` eq "-1232_1/3","Whole numbers oper
 ok(`perl -I . Calculator.pl "10/6*1234" 2>&1` eq "2056_2/3","Whole numbers operations, Multiplication.");
 ok(`perl -I . Calculator.pl "10/6/1234" 2>&1` eq "5/3702","Whole numbers operations, Division.");
 
+#Mixed fractions
+ok(`perl -I . Calculator.pl "10_1/2+12_3/4" 2>&1` eq "23_1/4","Mixed fractions , addition.");
+ok(`perl -I . Calculator.pl "10_1/2-12_3/4" 2>&1` eq "-2_1/4","Mixed fractions , Substraction.");
+ok(`perl -I . Calculator.pl "10_1/2*12_3/4" 2>&1` eq "133_7/8","Mixed fractions , Multiplication.");
+ok(`perl -I . Calculator.pl "10_1/2/12_3/4" 2>&1` eq "14/17","Mixed fractions , Division.");
 
-ok(`perl -I . Calculator.pl "10+1234" 2>&1` eq "1244","Whole numbers operations, addition.");
-ok(`perl -I . Calculator.pl "10-1234" 2>&1` eq "-1224","Whole numbers operations, Substraction.");
-ok(`perl -I . Calculator.pl "10*1234" 2>&1` eq "12340","Whole numbers operations, Multiplication.");
-ok(`perl -I . Calculator.pl "10/1234" 2>&1` eq "5/617","Whole numbers operations, Division.");
-1;
+#More fractions
+ok(`perl -I . Calculator.pl "1/2+3/4" 2>&1` eq "1_1/4","More fractions, addition.");
+ok(`perl -I . Calculator.pl "1/2-3/4" 2>&1` eq "-1/4","More fractions, Substraction.");
+ok(`perl -I . Calculator.pl "1/2*3/4" 2>&1` eq "3/8","More fractions, Multiplication.");
+ok(`perl -I . Calculator.pl "1/2/3/4" 2>&1` eq "2/3","More fractions, Division.");
+ok(`perl -I . Calculator.pl "-1/2+3/4" 2>&1` eq "1/4","More fractions, addition.");
+ok(`perl -I . Calculator.pl "-1/2-3/4" 2>&1` eq "-1_1/4","More fractions, Substraction.");
+ok(`perl -I . Calculator.pl "-1/2*3/4" 2>&1` eq "-3/8","More fractions, Multiplication.");
+ok(`perl -I . Calculator.pl "-1/2/3/4" 2>&1` eq "-2/3","More fractions, Division.");
+ok(`perl -I . Calculator.pl "1/2+-3/4" 2>&1` eq "-1/4","More fractions, addition.");
+ok(`perl -I . Calculator.pl "1/2--3/4" 2>&1` eq "1_1/4","More fractions, Substraction.");
+ok(`perl -I . Calculator.pl "1/2*-3/4" 2>&1` eq "-3/8","More fractions, Multiplication.");
+ok(`perl -I . Calculator.pl "1/2/-3/4" 2>&1` eq "-2/3","More fractions, Division.");
+ok(`perl -I . Calculator.pl "-1/2+-3/4" 2>&1` eq "-1_1/4","More fractions, addition.");
+ok(`perl -I . Calculator.pl "-1/2--3/4" 2>&1` eq "1/4","More fractions, Substraction.");
+ok(`perl -I . Calculator.pl "-1/2*-3/4" 2>&1` eq "3/8","More fractions, Multiplication.");
+ok(`perl -I . Calculator.pl "-1/2/-3/4" 2>&1` eq "2/3","More fractions, Division.");
+
+
+
 sub createRandomFraction {
   my $num = int(rand(100000));
   my $den = int(rand(100000)) + 1;#can't be zero
