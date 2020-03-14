@@ -95,7 +95,7 @@ sub make_improper_fraction ($) {
   my $den = $self->{den};
   my $whole = $self->{whole};
   $self->{num} = $num + ($whole * $den);
-  $self->{whole} = 0; 
+  $self->{whole} = 0;
 }
 
 #
@@ -165,3 +165,4 @@ sub lcd($$) {
   my $b = shift;
   return $a * $b / gcd($a,$b);
 }
+1;
