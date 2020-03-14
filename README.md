@@ -5,13 +5,13 @@
 perl -I . Calculator.pl [options] "expression"
 
 Where options can be:
-    - -t  runs the tests.
-    - -h  displays a help message
+    * -t  runs the tests.
+    * -h  displays a help message
 
 The expressions must be of the form:
-    - x_y/z
-    - y/z
-    - y
+    * x_y/z
+    * y/z
+    * y
   where x,y,z are integers.
 
   The supported operations are "+","-","*","/".
