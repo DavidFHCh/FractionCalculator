@@ -16,7 +16,7 @@ GetOptions ("help"  => sub{print $help_msg;exit;},
 
 # Run unit tests.
 if ($tests) {
-	#TODO tests.
+	print `perl -I . Test.pl`;
 	exit;
 }
 

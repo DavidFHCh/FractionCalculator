@@ -21,6 +21,8 @@ sub new  {
     num   => $num,
     den   => $den,
   };
+  $self->make_negative() if ($self->is_negative());
+  #print "yes" if ($self->is_negative());
   return $self;
 }
 
@@ -34,7 +36,7 @@ sub add ($$) {
   my $fract2 = shift;
   $fract1->make_improper_fraction();
   $fract2->make_improper_fraction();
-  my $lcd = lcd($fract1->{den},$fract2->{den});
+  my $lcd = lcd(abs($fract1->{den}),abs($fract2->{den}));
   my $op1 = $fract1->obtain_numerator_op($lcd);
   my $op2 = $fract2->obtain_numerator_op($lcd);
   return new(0,$op1+$op2,$lcd)->reduce_fraction();
@@ -48,9 +50,10 @@ sub substract ($$) {
   my $fract2 = shift;
   $fract1->make_improper_fraction();
   $fract2->make_improper_fraction();
-  my $lcd = lcd($fract1->{den},$fract2->{den});
+  my $lcd = lcd(abs($fract1->{den}),abs($fract2->{den}));
   my $op1 = $fract1->obtain_numerator_op($lcd);
   my $op2 = $fract2->obtain_numerator_op($lcd);
+  #print "$op1 - $op2\n";
   return new(0,$op1-$op2,$lcd)->reduce_fraction();
 }
 
@@ -91,11 +94,13 @@ sub divide ($$) {
 #
 sub make_improper_fraction ($) {
   my $self = shift;
-  my $num = $self->{num};
-  my $den = $self->{den};
-  my $whole = $self->{whole};
+  my $num = abs($self->{num});
+  my $den = abs($self->{den});
+  my $whole = abs($self->{whole});
+  my $negative = $self->is_negative();
   $self->{num} = $num + ($whole * $den);
   $self->{whole} = 0;
+  $self->make_negative() if ($negative);
 }
 
 #
@@ -106,6 +111,10 @@ sub reduce_fraction($) {
   my $num = $self->{num};
   my $den = $self->{den};
   my $whole = $self->{whole};
+  my $negative = $self->is_negative();
+  $num = abs($num);
+  $den = abs($den);
+  $whole = abs($whole);
   if ($num >= $den) {
     $whole += floor($num/$den);
     $num = $num%$den;
@@ -114,6 +123,7 @@ sub reduce_fraction($) {
   $self->{num} = $num/$gcd;
   $self->{den} = $den/$gcd;
   $self->{whole} = $whole;
+  $self->make_negative() if ($negative);
   return $self;
 }
 
@@ -123,8 +133,9 @@ sub reduce_fraction($) {
 sub obtain_numerator_op($$) {
   my $self = shift;
   my $lcd = shift;
-  my $num = $self->{num};
-  my $den = $self->{den};
+  my $num = abs($self->{num});
+  my $den = abs($self->{den});
+  return ($lcd*$num/$den)*-1 if ($self->is_negative());
   return ($lcd*$num/$den);
 }
 
@@ -137,11 +148,11 @@ sub to_string ($) {
   my $den = $self->{den};
   my $whole = $self->{whole};
   my $fract = "";
-  return "$whole\n" if ($num == 0);
+  return "$whole" if ($num == 0);
   $whole = "" if ($whole == 0);
   $whole .= "_" if ($whole != 0);
   $fract = "$num/$den";
-  return "$whole$fract\n";
+  return "$whole$fract";
 }
 
 ## Numeric functions
@@ -165,4 +176,39 @@ sub lcd($$) {
   my $b = shift;
   return $a * $b / gcd($a,$b);
 }
+
+#
+# Retunrs -1 if the numbers are negative(from a fraction point of view.)
+#
+sub is_negative($$$) {
+  my $self = shift;
+  my $negative = 1;
+  my $num = $self->{num};
+  my $den = $self->{den};
+  my $whole = $self->{whole};
+  $negative *= -1 if ($num < 0 or $whole < 0);
+  $negative *= -1 if ($den < 0);
+  return ($negative < 0);
+}
+
+#
+# Make a fraction negative
+#
+sub make_negative($) {
+  my $self = shift;
+  my $num = abs($self->{num});
+  my $den = abs($self->{den});
+  my $whole = abs($self->{whole});
+  if ($whole == 0) {
+    $num *= -1;
+  }
+  else {
+    $whole *= -1;
+  }
+  #print ("$num, $den, $whole\n");
+  $self->{num} = $num;
+  $self->{den} = $den;
+  $self->{whole} = $whole;
+}
+
 1;

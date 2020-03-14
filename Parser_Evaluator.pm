@@ -18,26 +18,24 @@ sub new {
 sub parse_evaluate($) {
 	my $self = shift;
 	my $expr = $self->{expr};
-	if ($expr =~ /^(-?\d*_?-?\d+\/-?\d+|-?\d+)$/) {
-		return new($1)->parse_fraction();
+	if ($expr =~ /^(-?\d*_?\d+\/-?\d+|-?\d+)\+(-?\d*_?\d+\/-?\d+|-?\d+)$/) {
+		return $self->evaluate(new($1)->parse_fraction(),new($2)->parse_fraction(),1);
 	}
-	if ($expr =~ /^(.+)\+(.+)$/) {
-		return $self->evaluate(new($1)->parse_evaluate(),new($2)->parse_evaluate(),1);
+	if ($expr =~ /^(-?\d*_?\d+\/-?\d+|-?\d+)\-(-?\d*_?\d+\/-?\d+|-?\d+)$/) {
+		#print "$1........$2";
+		return $self->evaluate(new($1)->parse_fraction(),new($2)->parse_fraction(),2);
 	}
-	if ($expr =~ /^(.+)\-(.+)$/) {
-		return $self->evaluate(new($1)->parse_evaluate(),new($2)->parse_evaluate(),2);
+	if ($expr =~ /^(-?\d*_?\d+\/-?\d+|-?\d+)\*(-?\d*_?\d+\/-?\d+|-?\d+)$/) {
+		return $self->evaluate(new($1)->parse_fraction(),new($2)->parse_fraction(),3);
 	}
-	if ($expr =~ /^(-?\d*_?-?\d+\/-?\d+|-?\d+)\*(.+)$/) {
-		return $self->evaluate(new($1)->parse_evaluate(),new($2)->parse_evaluate(),3);
+	if ($expr =~ /^(-?\d*_?\d+\/-?\d+|-?\d+)\/(-?\d*_?\d+\/-?\d+|-?\d+)$/) {
+		return $self->evaluate(new($1)->parse_fraction(),new($2)->parse_fraction(),4);
 	}
-	if ($expr =~ /^(-?\d*_?-?\d+\/-?\d+|-?\d+)\/(.+)$/) {
-		return $self->evaluate(new($1)->parse_evaluate(),new($2)->parse_evaluate(),4);
-	}
-	die ("Malformed expression.");
+	die "Malformed expression.";
 }
 
 #
-# Parse a single fraction. CORREGIR
+# Parse a single fraction.
 #
 sub parse_fraction($) {
 	my $self = shift;
@@ -45,23 +43,30 @@ sub parse_fraction($) {
 	my $num = "";
 	my $den = "";
 	my $whole = "";
-	if ($str =~ /^(.+)\/(.+)/$/ {
-    if ($1 =~ /^(-?\d+)\_(-?\d+)/$/) {
-			$num = $2;
-			$whole = $1;
-		}
-		if ($2 =~ /^(-?\d+)$/) {
-      $den = $1;
-		}
-	} else {
-		if ($str =~ /^(-?\d+)$/) {
-				$whole = $1;
+	if ($str =~ /^(-?\d+)\_(-?\d+)\/(-?\d+)$/){ # complete fraction
+		$whole = $1;
+		$num = $2;
+		$den = $3;
+	}
+	else {
+		if ($str =~ /^(-?\d+)\/(-?\d+)$/) { # just fraction part
+		$whole = 0;
+		$num = $1;
+		$den = $2;
 		}
 		else {
-			die "Malformed expression.";
+			if ($str =~ /^(-?\d+)$/) { # just whole
+				$whole = $1;
+				$num = 0;
+				$den = 1;
+			}
+			else {
+				die "Malformed fraction.";
+			}
 		}
-  }
-	print ($whole,$num,$den);
+	}
+	#print "$str\n";
+	#print "$whole,$num,$den\n";
 	return Fraction::new($whole,$num,$den);
 }
 
