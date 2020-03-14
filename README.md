@@ -1,6 +1,6 @@
 # FractionCalculator
 
-##Usage:
+## Usage:
 
 perl -I . Calculator.pl [options] "expression"
 
@@ -16,7 +16,7 @@ The expressions must be of the form:
 
   The supported operations are "+","-","*","/".
 
-###Examples:
+### Examples:
 
   * perl -I . Calculator.pl "1/2+3/4"
 
@@ -29,6 +29,6 @@ The expressions must be of the form:
 This calculator can only operate with two fractions or two whole numbers.
 
 
-##Requirements
+## Requirements
 
 This program was developed with perl v5.28.2
